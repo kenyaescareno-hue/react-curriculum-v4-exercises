@@ -1,15 +1,16 @@
-// TOPIC: StrictMode Effects and Cleanup
-// TASK: Notice how the count increments incorrectly based on the `setInterval` logic. Fix the useEffect so that the counter increments correctly.
-
 import { useEffect, useState } from 'react';
 
 export default function BugStrictMode() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       setCount((c) => c + 1);
     }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -20,4 +21,8 @@ export default function BugStrictMode() {
   );
 }
 
-// Write your explanation of how StrictMode helps us catch this bug
+// Explanation:
+// StrictMode runs the effect twice when testing in development.
+// Without cleanup, both timers can keep running and make the
+// counter go up by 2 instead of 1. The cleanup stops the old
+// timer so only one runs at a time.
